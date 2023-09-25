@@ -1,0 +1,98 @@
+To check the config:
+root@bacula:/etc/bacula# bacula-dir -t -c bacula-dir.conf
+root@bacula:/etc/bacula# bacula-sd -t -c bacula-sd.conf
+
+=============
+
+
+The error below refer to MyCatalog Backup process and the job report:
+
+========
+*messages
+08-Jul 11:06 server-dir JobId 2400: shell command: run BeforeJob "/etc/bacula/scripts/make_catalog_backup.pl MyCatalog"
+08-Jul 11:06 server-dir JobId 2400: BeforeJob: sh: 1: cannot create /var/lib/bacula/bacula.sql: Permission denied 08-Jul 11:06 server-dir JobId 2400: Error: Runscript: BeforeJob returned non-zero status=2. ERR=Child exited with code 2 08-Jul 11:06 server-dir JobId 2400: Error: Bacula server-dir 9.6.5 (11Jun20):
+status=2. ERR=Child exited with code 2 08-Jul 11:06 server-dir JobId 2400: Error: Bacula server-dir 9.6.5 (11Jun20):
+  Build OS:               x86_64-pc-linux-gnu ubuntu 20.10
+  JobId:                  2400
+  Job:                    BackupCatalog.2021-07-08_11.06.45_42
+  Backup Level:           Full
+  Client:                 "server-fd" 9.6.5 (11Jun20) x86_64-pc-linux-gnu,ubuntu,20.10
+  FileSet:                "Catalog" 2021-02-11 23:10:00
+  Pool:                   "File" (From Job resource)
+  Catalog:                "MyCatalog" (From Client resource)
+  Storage:                "File" (From Job resource)
+  Scheduled time:         08-Jul-2021 11:06:43
+  Start time:             08-Jul-2021 11:06:47
+  End time:               08-Jul-2021 11:06:47
+  Elapsed time:           1 sec
+  Priority:               11
+  FD Files Written:       0
+  SD Files Written:       0
+  FD Bytes Written:       0 (0 B)
+  SD Bytes Written:       0 (0 B)
+  Rate:                   0.0 KB/s
+  Software Compression:   None
+  Comm Line Compression:  None
+  Snapshot/VSS:           no
+  Encryption:             no
+  Accurate:               no
+  Volume name(s):         
+  Volume Session Id:      0
+  Volume Session Time:    0
+  Last Volume Bytes:      0 (0 B)
+  Non-fatal FD errors:    1
+  SD Errors:              0
+  FD termination status:  
+  SD termination status:  
+  Termination:            *** Backup Error ***
+
+========
+To fix it, you can change the permission to:
+
+chown root:bacula /var/lib/bacula/bacula.sql
+chmod  777 /var/lib/bacula/bacula.sql
+
+Permission
+-rwxrwxrwx  1 root   bacula 615796695 Jul  8 11:13 bacula.sql
+========
+
+*messages
+08-Jul 11:20 server-dir JobId 2401: Start Backup JobId 2401, Job=BackupCatalog.2021-07-08_11.19.38_44
+08-Jul 11:20 server-dir JobId 2401: Using Device "FileStorage" to write.
+08-Jul 11:20 server-sd JobId 2401: Volume "File0066" previously written, moving to end of data.
+08-Jul 11:20 server-sd JobId 2401: Elapsed time=00:00:03, Transfer rate=205.2 M Bytes/second
+08-Jul 11:20 server-sd JobId 2401: Sending spooled attrs to the Director. Despooling 229 bytes ...
+  Build OS:               x86_64-pc-linux-gnu ubuntu 20.10
+  JobId:                  2401
+  Job:                    BackupCatalog.2021-07-08_11.19.38_44
+  Backup Level:           Full
+  Client:                 "server-fd" 9.6.5 (11Jun20) x86_64-pc-linux-gnu,ubuntu,20.10
+  FileSet:                "Catalog" 2021-02-11 23:10:00
+  Pool:                   "File" (From Job resource)
+  Catalog:                "MyCatalog" (From Client resource)
+  Storage:                "File" (From Job resource)
+  Scheduled time:         08-Jul-2021 11:19:36
+  Start time:             08-Jul-2021 11:20:00
+  End time:               08-Jul-2021 11:20:04
+  Elapsed time:           4 secs
+  Priority:               11
+  FD Files Written:       1
+  SD Files Written:       1
+  FD Bytes Written:       615,797,072 (615.7 MB)
+  SD Bytes Written:       615,797,187 (615.7 MB)
+  Rate:                   153949.3 KB/s
+  Software Compression:   None
+  Comm Line Compression:  60.8% 2.6:1
+  Snapshot/VSS:           no
+  Encryption:             no
+  Accurate:               no
+  Volume name(s):         File0066
+  Volume Session Id:      47
+  Volume Session Time:    1625525298
+  Last Volume Bytes:      4,528,159,913 (4.528 GB)
+  Non-fatal FD errors:    0
+  SD Errors:              0
+  FD termination status:  OK
+  SD termination status:  OK
+  Termination:            Backup OK
+========
